@@ -171,7 +171,7 @@ async def process_callback_button1(callback_query: types.CallbackQuery):
         await bot.send_message(callback_query.from_user.id, text="⭐️⭐️⭐️⭐️⭐️⭐️")
 
 
-@ dp.message_handler(commands=['start'])
+@ dp.message_handler(commands=['start', 'get_schedule'])
 async def start_message(message: types.Message):
     db.add_user(user_id=message.from_user.id)
     await bot.send_message(message.chat.id, text=START_MESSAGE.format(message.from_user.first_name), reply_markup=group_keyboard)
