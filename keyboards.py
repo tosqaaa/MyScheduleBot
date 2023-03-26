@@ -10,7 +10,7 @@ poit_1_button = InlineKeyboardButton(text="ПОИТ-1", callback_data="poit-1")
 isit_1_button = InlineKeyboardButton(text="ИСИТ-1", callback_data="isit-1")
 
 uir_2_button = InlineKeyboardButton(text="УИР-2", callback_data="uir-2")
-poks_2_button = InlineKeyboardButton(text="ПОКС-2", callback_data="pok-2s")
+poks_2_button = InlineKeyboardButton(text="ПОКС-2", callback_data="poks-2")
 fiz_2_button = InlineKeyboardButton(text="ФИЗ-2", callback_data="fiz-2")
 mi_2_button = InlineKeyboardButton(text="МИ-2", callback_data="mi-2")
 web_2_button = InlineKeyboardButton(text="ВЕБ-2", callback_data="web-2")
