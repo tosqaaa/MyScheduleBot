@@ -1,0 +1,6 @@
+aiogram
+requests
+bs4
+lxml
+openpyxl
+xls2xlsx
