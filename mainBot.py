@@ -6,7 +6,7 @@ from db import Subscriber
 from datetime import datetime
 from aiogram.utils import executor
 from db import ScheduleData
-from Exceler import end_week_day
+from Exceler import end_week_day, get_xlsx_name
 from keys import BOT_TOKEN, DAYS, DAYS_RU
 from messages import *
 from keyboards import *
@@ -196,7 +196,10 @@ async def status(message: types.Message):
     else:
         await bot.send_message(message.chat.id, text=STATUS_FALSE)
 
-
+@dp.message_handler(commands=['get_file_xlsx'])
+async def send_xlsx_file(message: types.Message):
+    with open(get_xlsx_name(), "rb") as file:
+        await bot.send_document(message.chat.id, types.InputFile(file))
 # async def new_schedule(wait_for: int):
 #     while True:
 #         await asyncio.sleep(wait_for)

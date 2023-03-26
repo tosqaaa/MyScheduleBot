@@ -36,5 +36,13 @@ def getDaySch(sheet, day_start, day_end, group):
     return string
 
 
-
+def get_xlsx_name():
+    pattern = re.compile(r".*\d{2}.\d{2}.\d{4}-\d{2}.\d{2}.\d{4}.*")
+    for file in os.listdir('./'):
+        # print(os.path.join("./", file)[2:])
+        if re.match(pattern,file):
+            result = re.search(pattern, os.path.join('./', file)[2:])
+            return result.group()
+        
+print(type(get_xlsx_name()))
 
