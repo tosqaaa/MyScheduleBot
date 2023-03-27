@@ -1,5 +1,5 @@
 import sqlite3
-from Exceler import getDaySch, ws
+from Exceler import getDaySch, get_ws
 from keys import RANGES_DAYS, RANGES_GROUPS, DAYS, exec_time
 
 
@@ -94,11 +94,11 @@ class ScheduleData:
                 for i in range(6):
                     for j in range(1, 9):
                         value = getDaySch(
-                            sheet=ws, day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][0])
+                            sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][0])
                         self.cursor.execute(
                             f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value, f"1{j}_1"))
                         value1 = getDaySch(
-                            sheet=ws, day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][1])
+                            sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][1])
                         self.cursor.execute(
                             f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value1, f"1{j}_2"))
                         self.connection.commit()
@@ -122,6 +122,3 @@ class ScheduleData:
         finally:
             self.cursor.close
             self.connection.close
-
-
-

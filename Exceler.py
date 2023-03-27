@@ -5,12 +5,15 @@ import re
 import os
 
 
-pattern = re.compile(r".*\d{2}.\d{2}.\d{4}-\d{2}.\d{2}.\d{4}.*")
-for file in os.listdir("./"):
-    if re.match(pattern, file):
-        end_week_day = (pattern.search(file).group()[9:30])
-        wb = openpyxl.load_workbook(os.path.join('./', file))
-        ws = wb.active      
+def get_ws():
+    pattern = re.compile(r".*\d{2}.\d{2}.\d{4}-\d{2}.\d{2}.\d{4}.*")
+    for file in os.listdir("./"):
+        if re.match(pattern, file):
+            end_week_day = (pattern.search(file).group()[9:30])
+            wb = openpyxl.load_workbook(os.path.join('./', file))
+            ws = wb.active
+    return (ws, end_week_day)
+
 
 def getMergedCellVal(sheet, cell):
     rng = [s for s in sheet.merged_cells.ranges if cell.coordinate in s]
@@ -40,9 +43,6 @@ def get_xlsx_name():
     pattern = re.compile(r".*\d{2}.\d{2}.\d{4}-\d{2}.\d{2}.\d{4}.*")
     for file in os.listdir('./'):
         # print(os.path.join("./", file)[2:])
-        if re.match(pattern,file):
+        if re.match(pattern, file):
             result = re.search(pattern, os.path.join('./', file)[2:])
             return result.group()
-        
-print(type(get_xlsx_name()))
-
