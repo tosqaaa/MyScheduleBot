@@ -18,8 +18,7 @@ dp = Dispatcher(bot=bot)
 db = Subscriber()
 
 
-sch_data = ScheduleData(to_update=False)
-
+sch_data = ScheduleData(to_update=True)
 
 @dp.callback_query_handler(text="uir-1")  # Колбэк на УИР
 async def process_callback_button1(callback_query: types.CallbackQuery):

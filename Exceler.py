@@ -1,5 +1,5 @@
 
-from keys import RANGES_DAYS, RANGES_GROUPS
+from keys import RANGES_DAYS, RANGES_GROUPS, SESSIONS
 import openpyxl
 import re
 import os
@@ -29,7 +29,7 @@ def getDaySch(sheet, day_start, day_end, group):
 
     for i in range(0, len(arr), 4):
         counter += 1
-        arr.insert(i, f"\n<b>{counter} пара</b>")
+        arr.insert(i, f"\n<b>{counter} пара ({SESSIONS[counter-1]})</b>")
     arr = [str(el) for el in arr if str(el) != "None"]
     string = "\n".join(str(e) for e in arr)
 
