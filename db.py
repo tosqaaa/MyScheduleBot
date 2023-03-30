@@ -1,6 +1,7 @@
 import sqlite3
 from Exceler import getDaySch, get_ws
 from keys import RANGES_DAYS, RANGES_GROUPS, DAYS, exec_time
+import os
 
 
 class Subscriber:
@@ -65,14 +66,13 @@ class Subscriber:
             self.connection.close()
 
 
-class ScheduleData:
-    @exec_time
-    def __init__(self, to_update: bool):
-        self.connection = sqlite3.connect(
+
+def create_schedule_db():
+        connection = sqlite3.connect(
             "schedule_db.db", check_same_thread=False)
-        self.cursor = self.connection.cursor()
+        cursor = connection.cursor()
         try:
-            self.cursor.execute("""CREATE TABLE IF NOT EXISTS schedule(
+            cursor.execute("""CREATE TABLE IF NOT EXISTS schedule(
                     group_id TEXT,
                     Monday TEXT,
                     Tuesday TEXT,
@@ -80,45 +80,68 @@ class ScheduleData:
                     Thursday TEXT,
                     Friday TEXT,
                     Sunday TEXT)""")
-            self.connection.commit()
+            connection.commit()
 
-            for i in range(11, 20):
+            for i in range(11, 19):
 
                 value = f'{i}'+'_'+'1'
-                self.cursor.execute(
+                cursor.execute(
                     """INSERT OR IGNORE INTO schedule('group_id') VALUES(?)""", ((value), ))
                 value = f'{i}'+'_'+'2'
-                self.cursor.execute(
+                cursor.execute(
                     """INSERT OR IGNORE INTO schedule('group_id') VALUES(?)""", ((value), ))
-            if to_update is True:
-                for i in range(6):
-                    for j in range(1, 9):
-                        value = getDaySch(
-                            sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][0])
-                        self.cursor.execute(
-                            f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value, f"1{j}_1"))
-                        value1 = getDaySch(
-                            sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][1])
-                        self.cursor.execute(
-                            f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value1, f"1{j}_2"))
-                        self.connection.commit()
+
+            # for i in range(6):
+            #     for j in range(1, 9):
+            #             value = getDaySch(
+            #                 sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][0])
+            #             cursor.execute(
+            #                 f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value, f"1{j}_1"))
+            #             value1 = getDaySch(
+            #                 sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][1])
+            #             cursor.execute(
+            #                 f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value1, f"1{j}_2"))
+            #             connection.commit()
         except Exception as ex:
             print(ex)
         finally:
-            self.cursor.close()
-            self.connection.close()
+            cursor.close()
+            connection.close()
 
-    def getDataFromDB(self, group_id, day):
-        self.connection = sqlite3.connect(
+
+def update_schedule():
+        connection = sqlite3.connect(
             "schedule_db.db", check_same_thread=False)
-        self.cursor = self.connection.cursor()
+        cursor = connection.cursor()
         try:
-            result = self.cursor.execute(
+            for i in range(6):
+                for j in range(1, 9):
+                        value = getDaySch(
+                            sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][0])
+                        cursor.execute(
+                            f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value, f"1{j}_1"))
+                        value1 = getDaySch(
+                            sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][1])
+                        cursor.execute(
+                            f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value1, f"1{j}_2"))
+                        connection.commit()
+        except Exception as ex:
+            print("Ошибка в db.py update_schedule: " + str(ex))
+        finally:
+            cursor.close()
+            connection.close()
+
+def getDataFromDB (group_id, day):
+        connection = sqlite3.connect(
+            "schedule_db.db", check_same_thread=False)
+        cursor = connection.cursor()
+        try:
+            result = cursor.execute(
                 f"""SELECT {day} FROM schedule WHERE group_id = ? """, (group_id,)).fetchone()
             return result[0]
 
         except Exception as ex:
             print(ex)
         finally:
-            self.cursor.close
-            self.connection.close
+            cursor.close
+            connection.close
