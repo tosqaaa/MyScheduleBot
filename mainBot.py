@@ -17,8 +17,6 @@ bot = Bot(token=BOT_TOKEN, parse_mode="html")
 dp = Dispatcher(bot=bot)
 db = Subscriber()
 
-create_schedule_db()
-update_schedule()
 
 
     
@@ -180,9 +178,13 @@ async def start_message(message: types.Message):
 
 
 @dp.message_handler(commands=['update_schedule'])
-async def update_schedule(message: types.Message):
+async def update_schedule_admin(message: types.Message):
     if message.from_user.id == 696966668:
         await bot.send_message(message.chat.id, text="База данных начала обновляться")
+        create_schedule_db()
+        
+        update_schedule()
+        
         await bot.send_message(message.chat.id, text="База данных обновилась")
         
         

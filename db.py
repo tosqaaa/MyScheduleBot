@@ -66,7 +66,7 @@ class Subscriber:
             self.connection.close()
 
 
-
+@exec_time
 def create_schedule_db():
         connection = sqlite3.connect(
             "schedule_db.db", check_same_thread=False)
@@ -81,55 +81,90 @@ def create_schedule_db():
                     Friday TEXT,
                     Sunday TEXT)""")
             connection.commit()
-
+            sheet, _ = get_ws()
             for i in range(11, 19):
-
                 value = f'{i}'+'_'+'1'
                 cursor.execute(
                     """INSERT OR IGNORE INTO schedule('group_id') VALUES(?)""", ((value), ))
                 value = f'{i}'+'_'+'2'
                 cursor.execute(
                     """INSERT OR IGNORE INTO schedule('group_id') VALUES(?)""", ((value), ))
+            for group_num in range(11, 19):
+                group_id = f"1{group_num}_"
+                for day_idx, day_name in enumerate(DAYS):
+                # получаем значение расписания для первой и второй подгруппы
+                        value = getDaySch(
+                        sheet=sheet,
+                        day_start=RANGES_DAYS[day_idx][0],
+                        day_end=RANGES_DAYS[day_idx][1],
+                        group=RANGES_GROUPS[f"{group_num}"][0]
+                        )
+                        value1 = getDaySch(
+                            sheet=sheet,
+                            day_start=RANGES_DAYS[day_idx][0],
+                            day_end=RANGES_DAYS[day_idx][1],
+                            group=RANGES_GROUPS[f"{group_num}"][1]
+                        )
 
-            # for i in range(6):
-            #     for j in range(1, 9):
-            #             value = getDaySch(
-            #                 sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][0])
-            #             cursor.execute(
-            #                 f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value, f"1{j}_1"))
-            #             value1 = getDaySch(
-            #                 sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][1])
-            #             cursor.execute(
-            #                 f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value1, f"1{j}_2"))
-            #             connection.commit()
+                # обновляем значения в базе данных
+                cursor.execute(
+                    f"UPDATE schedule SET {day_name} = ? WHERE group_id = ?", (value, f"{group_id}1")
+                )
+                cursor.execute(
+                    f"UPDATE schedule SET {day_name} = ? WHERE group_id = ?", (value1, f"{group_id}2")
+                )
+
+        # сохраняем изменения в базе данных
+            connection.commit()
         except Exception as ex:
             print(ex)
         finally:
             cursor.close()
             connection.close()
-
-
+@exec_time
 def update_schedule():
-        connection = sqlite3.connect(
-            "schedule_db.db", check_same_thread=False)
+    try:
+        # открываем соединение с базой данных
+        connection = sqlite3.connect("schedule_db.db", check_same_thread=False)
         cursor = connection.cursor()
-        try:
-            for i in range(6):
-                for j in range(1, 9):
-                        value = getDaySch(
-                            sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][0])
-                        cursor.execute(
-                            f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value, f"1{j}_1"))
-                        value1 = getDaySch(
-                            sheet=get_ws()[0], day_start=RANGES_DAYS[i][0], day_end=RANGES_DAYS[i][1], group=RANGES_GROUPS[f"1{j}"][1])
-                        cursor.execute(
-                            f"""UPDATE schedule SET {DAYS[i]} = ? WHERE group_id =?""", (value1, f"1{j}_2"))
-                        connection.commit()
-        except Exception as ex:
-            print("Ошибка в db.py update_schedule: " + str(ex))
-        finally:
-            cursor.close()
-            connection.close()
+
+        # получаем лист с расписанием и группы
+        sheet, _ = get_ws()
+
+        # для каждой группы и дня недели
+        for group_num in range(11, 19):
+            group_id = f"1{group_num}_"
+            for day_idx, day_name in enumerate(DAYS):
+                # получаем значение расписания для первой и второй подгруппы
+                value = getDaySch(
+                    sheet=sheet,
+                    day_start=RANGES_DAYS[day_idx][0],
+                    day_end=RANGES_DAYS[day_idx][1],
+                    group=RANGES_GROUPS[f"{group_num}"][0]
+                )
+                value1 = getDaySch(
+                    sheet=sheet,
+                    day_start=RANGES_DAYS[day_idx][0],
+                    day_end=RANGES_DAYS[day_idx][1],
+                    group=RANGES_GROUPS[f"{group_num}"][1]
+                )
+
+                # обновляем значения в базе данных
+                cursor.execute(
+                    f"UPDATE schedule SET {day_name} = ? WHERE group_id = ?", (value, f"{group_id}1")
+                )
+                cursor.execute(
+                    f"UPDATE schedule SET {day_name} = ? WHERE group_id = ?", (value1, f"{group_id}2")
+                )
+
+        # сохраняем изменения в базе данных
+        connection.commit()
+    except Exception as ex:
+        print("Ошибка в db.py update_schedule: " + str(ex))
+    finally:
+        # закрываем соединение с базой данных
+        cursor.close()
+        connection.close()
 
 def getDataFromDB (group_id, day):
         connection = sqlite3.connect(
@@ -145,3 +180,6 @@ def getDataFromDB (group_id, day):
         finally:
             cursor.close
             connection.close
+            
+create_schedule_db()
+

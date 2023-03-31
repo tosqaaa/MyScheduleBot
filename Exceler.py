@@ -12,7 +12,7 @@ def get_ws():
             end_week_day = (pattern.search(file).group()[9:30])
             wb = openpyxl.load_workbook(os.path.join('./', file))
             ws = wb.active
-    return (ws, end_week_day)
+    return [ws, end_week_day]
 
 
 def getMergedCellVal(sheet, cell):
