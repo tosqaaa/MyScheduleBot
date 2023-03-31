@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN, parse_mode="html")
 dp = Dispatcher(bot=bot)
 db = Subscriber()
-sch_data = ScheduleData(to_update=True)
+sch_data = ScheduleData(to_update=False)
 
     
 @dp.callback_query_handler(text="uir-1")  # Колбэк на УИР
