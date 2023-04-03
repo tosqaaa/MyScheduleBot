@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BOT_TOKEN, parse_mode="html")
 dp = Dispatcher(bot=bot)
 db = Subscriber()
-sch_data = ScheduleData(to_update=False)
+sch_data = ScheduleData(to_update=True)
 
     
 @dp.callback_query_handler(text="uir-1")  # Колбэк на УИР
@@ -177,7 +177,7 @@ async def start_message(message: types.Message):
     db.add_user(user_id=message.from_user.id)
     await bot.send_message(message.chat.id, text=START_MESSAGE.format(message.from_user.first_name), reply_markup=group_keyboard)
 
-@dp.message_hadler(commands=['get_menu'])
+@dp.message_handler(commands=['get_menu'])
 async def get_message(message: types.Message):
     for item in get_menu():
         await bot.send_message(message.chat.id, text=item)

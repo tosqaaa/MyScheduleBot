@@ -69,12 +69,15 @@ def get_menu(LINK=MENU_LINK):
     response = requests.get(url=MENU_LINK)
     soup = BeautifulSoup(response.text, "lxml")
     table = soup.find('table',{'class':"table table-bordered"})
-    tds = table.find_all('td')
-    for item in tds:
-        yield item.text
+    trs = table.find_all('tr')
+    print(print(trs[5].text.replace('None', "")))
+    
+    
+    # for item in tds:
+    #     yield item.text
     
     
 
-# if __name__ == "__main__":
-#     # get_menu()
-#     download_file(get_schedule_url())
+if __name__ == "__main__":
+    # get_menu()
+    download_file(get_schedule_url())

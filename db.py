@@ -1,6 +1,7 @@
 import sqlite3
 from Exceler import getDaySch, get_ws
 from keys import RANGES_DAYS, RANGES_GROUPS, DAYS, exec_time
+from parcer import get_menu
 
 
 class Subscriber:
@@ -122,3 +123,9 @@ class ScheduleData:
         finally:
             self.cursor.close
             self.connection.close
+
+class MenuData:
+    def __init__(self):
+        self.connection = sqlite3.connect("menu", check_same_thread=False)
+        self.cursor = self.connection.cursor()
+    def close(self):
