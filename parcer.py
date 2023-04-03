@@ -1,10 +1,11 @@
 import requests
+from bs4 import BeautifulSoup
 import re
 import os
 from keys import exec_time
 from xls2xlsx import XLS2XLSX
 from bs4 import BeautifulSoup
-from keys import SITE_LINK
+from keys import SITE_LINK, MENU_LINK
 import asyncio
 
 
@@ -64,11 +65,16 @@ async def get_file_name(SITE_LINK):
     return result.group()
 
 
-# async def check_and_download(time_to_wait: int, SITE_LINK):
-#     mes = await get_file_name(SITE_LINK)
-#     print(mes)
-#     await asyncio.sleep(time_to_wait)
+def get_menu(LINK=MENU_LINK):
+    response = requests.get(url=MENU_LINK)
+    soup = BeautifulSoup(response.text, "lxml")
+    table = soup.find('table',{'class':"table table-bordered"})
+    tds = table.find_all('td')
+    for item in tds:
+        yield item.text
+    
+    
 
 # if __name__ == "__main__":
-#     asyncio.get_event_loop().create_task(check_and_download(10, SITE_LINK))
-download_file(get_schedule_url())
+#     # get_menu()
+#     download_file(get_schedule_url())

@@ -10,6 +10,7 @@ from Exceler import get_ws, get_xlsx_name
 from keys import BOT_TOKEN, DAYS, DAYS_RU
 from messages import *
 from keyboards import *
+from parcer import get_menu
 
 
 logging.basicConfig(level=logging.INFO)
@@ -169,11 +170,17 @@ async def process_callback_button1(callback_query: types.CallbackQuery):
         await bot.send_message(callback_query.from_user.id, text="⭐️⭐️⭐️⭐️⭐️⭐️")
 
 
+
+
 @ dp.message_handler(commands=['start', 'get_schedule'])
 async def start_message(message: types.Message):
     db.add_user(user_id=message.from_user.id)
     await bot.send_message(message.chat.id, text=START_MESSAGE.format(message.from_user.first_name), reply_markup=group_keyboard)
 
+@dp.message_hadler(commands=['get_menu'])
+async def get_message(message: types.Message):
+    for item in get_menu():
+        await bot.send_message(message.chat.id, text=item)
 
 @ dp.message_handler(commands=["sub"])
 async def subscribe(message: types.Message):
